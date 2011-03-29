@@ -68,9 +68,9 @@ static struct {
 	char env_setting[64];
 } expansion_config;
 
-#if defined(CONFIG_CMD_NET)
-static void setup_net_chip(void);
-#endif
+static void setup_net_chip1(void);
+static void setup_net_chip2(void);
+static void finalize_gpmc_config(void);
 
 /* GPMC definitions for LAN9221 chips on Tobi expansion boards */
 static const u32 gpmc_lan_config[] = {
@@ -227,11 +227,14 @@ int misc_init_r(void)
 			expansion_config.revision,
 			expansion_config.fab_revision);
 		setenv("defaultdisplay", "dvi");
+		setup_net_chip1();
 		break;
 	case GUMSTIX_TOBI_DUO:
 		printf("Recognized Tobi Duo expansion board (rev %d %s)\n",
 			expansion_config.revision,
 			expansion_config.fab_revision);
+		setup_net_chip1();
+		setup_net_chip2();
 		break;
 	case GUMSTIX_PALO35:
 		printf("Recognized Palo35 expansion board (rev %d %s)\n",
@@ -250,6 +253,7 @@ int misc_init_r(void)
 			expansion_config.revision,
 			expansion_config.fab_revision);
 		setenv("defaultdisplay", "lcd43");
+		setup_net_chip1();
 		break;
 	case GUMSTIX_PINTO:
 		printf("Recognized Pinto expansion board (rev %d %s)\n",
@@ -268,6 +272,7 @@ int misc_init_r(void)
 			expansion_config.fab_revision);
 		MUX_USRP_E();
 		setenv("defaultdisplay", "dvi");
+		setup_net_chip1();
 		break;
 	case GUMSTIX_NO_EEPROM:
 		printf("No EEPROM on expansion board\n");
@@ -275,6 +280,8 @@ int misc_init_r(void)
 	default:
 		printf("Unrecognized expansion board\n");
 	}
+
+	finalize_gpmc_config();
 
 	if (expansion_config.content == 1)
 		setenv(expansion_config.env_var, expansion_config.env_setting);
@@ -295,23 +302,40 @@ void set_muxconf_regs(void)
 	MUX_OVERO();
 }
 
-#if defined(CONFIG_CMD_NET)
 /*
- * Routine: setup_net_chip
+ * Routine: setup_net_chip 1
  * Description: Setting up the configuration GPMC registers specific to the
- *	      Ethernet hardware.
+ *	      primary Ethernet hardware.
  */
-static void setup_net_chip(void)
+static void setup_net_chip_1(void)
 {
 	struct ctrl *ctrl_base = (struct ctrl *)OMAP34XX_CTRL_BASE;
 
 	/* first lan chip */
 	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5], 0x2C000000,
 			GPMC_SIZE_16M);
+}
+
+/*
+ * Routine: setup_net_chip 2
+ * Description: Setting up the configuration GPMC registers specific to the
+ *	      secondary Ethernet hardware.
+ */
+static void setup_net_chip_2(void)
+{
+	struct ctrl *ctrl_base = (struct ctrl *)OMAP34XX_CTRL_BASE;
 
 	/* second lan chip */
 	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[4], 0x2B000000,
 			GPMC_SIZE_16M);
+}
+
+/*
+ *  Finalize gpmc and ethernet configuration
+*/
+static void finalize_gpmc_config(void)
+{
+	struct ctrl *ctrl_base = (struct ctrl *)OMAP34XX_CTRL_BASE;
 
 	/* Enable off mode for NWE in PADCONF_GPMC_NWE register */
 	writew(readw(&ctrl_base ->gpmc_nwe) | 0x0E00, &ctrl_base->gpmc_nwe);
@@ -331,7 +355,6 @@ static void setup_net_chip(void)
 		omap_set_gpio_dataout(64, 1);
 	}
 }
-#endif
 
 int board_eth_init(bd_t *bis)
 {
