@@ -310,8 +310,10 @@ static void setup_net_chip(void)
 			GPMC_SIZE_16M);
 
 	/* second lan chip */
+#if 0
 	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[4], 0x2B000000,
 			GPMC_SIZE_16M);
+#endif
 
 	/* Enable off mode for NWE in PADCONF_GPMC_NWE register */
 	writew(readw(&ctrl_base ->gpmc_nwe) | 0x0E00, &ctrl_base->gpmc_nwe);
