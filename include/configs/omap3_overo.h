@@ -168,6 +168,7 @@
 	"nandrootfstype=jffs2\0" \
 	"mmcargs=setenv bootargs console=${console} " \
 		"mpurate=${mpurate} " \
+		"${extrakargs} " \
 		"vram=${vram} " \
 		"omapfb.mode=dvi:${dvimode} " \
 		"omapfb.debug=y " \
@@ -176,6 +177,7 @@
 		"rootfstype=${mmcrootfstype}\0" \
 	"nandargs=setenv bootargs console=${console} " \
 		"mpurate=${mpurate} " \
+		"${extrakargs} " \
 		"vram=${vram} " \
 		"omapfb.mode=dvi:${dvimode} " \
 		"omapfb.debug=y " \
