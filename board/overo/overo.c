@@ -227,11 +227,20 @@ int misc_init_r(void)
 			expansion_config.revision,
 			expansion_config.fab_revision);
 		setenv("defaultdisplay", "dvi");
+		/* first lan chip */
+		enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5],
+				0x2C000000, GPMC_SIZE_16M);
 		break;
 	case GUMSTIX_TOBI_DUO:
 		printf("Recognized Tobi Duo expansion board (rev %d %s)\n",
 			expansion_config.revision,
 			expansion_config.fab_revision);
+		/* first lan chip */
+		enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5],
+				0x2C000000, GPMC_SIZE_16M);
+		/* second lan chip */
+		enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[4],
+				0x2B000000, GPMC_SIZE_16M);
 		break;
 	case GUMSTIX_PALO35:
 		printf("Recognized Palo35 expansion board (rev %d %s)\n",
@@ -250,6 +259,9 @@ int misc_init_r(void)
 			expansion_config.revision,
 			expansion_config.fab_revision);
 		setenv("defaultdisplay", "lcd43");
+		/* first lan chip */
+		enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5],
+				0x2C000000, GPMC_SIZE_16M);
 		break;
 	case GUMSTIX_PINTO:
 		printf("Recognized Pinto expansion board (rev %d %s)\n",
@@ -268,6 +280,9 @@ int misc_init_r(void)
 			expansion_config.fab_revision);
 		MUX_USRP_E();
 		setenv("defaultdisplay", "dvi");
+		/* first lan chip */
+		enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5],
+				0x2C000000, GPMC_SIZE_16M);
 		break;
 	case GUMSTIX_NO_EEPROM:
 		printf("No EEPROM on expansion board\n");
@@ -304,14 +319,6 @@ void set_muxconf_regs(void)
 static void setup_net_chip(void)
 {
 	struct ctrl *ctrl_base = (struct ctrl *)OMAP34XX_CTRL_BASE;
-
-	/* first lan chip */
-	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[5], 0x2C000000,
-			GPMC_SIZE_16M);
-
-	/* second lan chip */
-	enable_gpmc_cs_config(gpmc_lan_config, &gpmc_cfg->cs[4], 0x2B000000,
-			GPMC_SIZE_16M);
 
 	/* Enable off mode for NWE in PADCONF_GPMC_NWE register */
 	writew(readw(&ctrl_base ->gpmc_nwe) | 0x0E00, &ctrl_base->gpmc_nwe);
