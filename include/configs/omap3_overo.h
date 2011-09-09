@@ -157,7 +157,7 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	"loadaddr=0x82000000\0" \
 	"console=ttyO2,115200n8\0" \
-	"mpurate=500\0" \
+	"mpurate=720\0" \
 	"vram=12M\0" \
 	"dvimode=1024x768MR-16@60\0" \
 	"defaultdisplay=dvi\0" \
