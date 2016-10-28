@@ -67,7 +67,11 @@ dtb-$(CONFIG_ARCH_UNIPHIER) += \
 	uniphier-ph1-sld8-ref.dtb \
 	uniphier-proxstream2-gentil.dtb \
 	uniphier-proxstream2-vodka.dtb
-dtb-$(CONFIG_ARCH_ZYNQ) += zynq-zc702.dtb \
+
+dtb-$(CONFIG_ARCH_ZYNQ) += \
+	zynq-e3xx-1.dtb \
+	zynq-e3xx-3.dtb \
+	zynq-zc702.dtb \
 	zynq-zc706.dtb \
 	zynq-zed.dtb \
 	zynq-zybo.dtb \
